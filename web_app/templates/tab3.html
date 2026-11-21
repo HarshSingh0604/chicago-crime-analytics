@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Tab 3 — Use Case 2{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Use Case 2 — Exploratory Analysis & Visualization</h1>
+        <p class="muted">
+            Static showcase of the Use Case 2 analysis generated from the crimes table.
+            Changing the dataset will change the graphs but "Key Insights" are static and will not change. 
+        </p>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     1. CRIME TREND OVER YEARS
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Crime Trend Over Years</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='crime_trend_by_year.png') }}"
+            alt="Crime Trend Over Years"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                Crime counts fluctuate considerably across the observed years
+                rather than following a consistent upward or downward trend.
+            </li>
+
+            <li>
+                <strong>2016</strong> records the highest crime count in the
+                dataset, while <strong>2017</strong> shows the lowest.
+            </li>
+
+            <li>
+                Crime levels rise again after the sharp decline in 2017,
+                reaching another high point in <strong>2019</strong>.
+            </li>
+
+            <li>
+                From 2019 onward, crime counts generally decline, with a
+                brief increase in <strong>2021</strong>.
+            </li>
+
+            <li>
+                The overall pattern indicates significant year-to-year
+                variation rather than sustained long-term growth or fall.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     2. TOP 10 CRIME CATEGORIES
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Top 10 Crime Categories</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='top10_crime_categories.png') }}"
+            alt="Top 10 Crime Categories"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                <strong>THEFT</strong> is the most frequently recorded crime
+                category, with a clear lead over the other categories.
+            </li>
+
+            <li>
+                <strong>BATTERY</strong> ranks second, followed by
+                <strong>ASSAULT</strong>, showing a noticeable difference
+                between the leading categories and the rest.
+            </li>
+
+            <li>
+                <strong>NARCOTICS</strong>, <strong>BURGLARY</strong>, and
+                <strong>ROBBERY</strong> form the next major group of frequently
+                recorded crime categories.
+            </li>
+
+            <li>
+                <strong>MOTOR VEHICLE THEFT</strong> and
+                <strong>VANDALISM</strong> occur at lower frequencies than
+                the leading categories.
+            </li>
+
+            <li>
+                <strong>PUBLIC PEACE VIOLATION</strong> and
+                <strong>DECEPTIVE PRACTICE</strong> have the lowest counts
+                among the ten categories shown.
+            </li>
+
+            <li>
+                Overall, the distribution is concentrated in a small number
+                of crime categories, with <strong>THEFT</strong> accounting
+                for the largest share of the top-10 group.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     3. ARREST RATE BY YEAR
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Arrest Rate by Year</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='arrest_rate_by_year.png') }}"
+            alt="Arrest Rate by Year"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                The arrest rate varies across the observed years, indicating
+                that the proportion of reported incidents resulting in an arrest
+                was not constant.
+            </li>
+
+            <li>
+                The arrest rate reaches its highest level in
+                <strong>2018</strong>, at approximately <strong>34%</strong>.
+            </li>
+
+            <li>
+                <strong>2016</strong> records the lowest arrest rate, at
+                approximately <strong>26%</strong>.
+            </li>
+
+            <li>
+                After increasing from 2016 to 2018, the arrest rate generally
+                declines through 2021 before rising again in 2022.
+            </li>
+
+            <li>
+                The rate falls again in 2023, returning to approximately the
+                same level observed in 2015.
+            </li>
+
+            <li>
+                Overall, the chart shows noticeable year-to-year variation in
+                arrest outcomes rather than a consistent long-term trend.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     4. MONTH VS DAY OF WEEK HEATMAP
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Crime Frequency: Month vs Day of Week</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='heatmap_month_day.png') }}"
+            alt="Crime Frequency by Month and Day of Week"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+    <ul>
+    <li>
+        <strong>November on Thursday</strong> records the highest observed
+        crime frequency at <strong>34 incidents</strong>, making it the
+        most prominent month-and-day combination in the heatmap.
+    </li>
+
+    <li>
+        Other relatively high-frequency combinations include
+        <strong>October and November on Monday</strong>, <strong>July on Sunday</strong>,
+        and <strong>December on Saturday</strong>.
+    </li>
+
+    <li>
+        The lowest observed frequency is <strong>15 incidents</strong>,
+        occurring on <strong>April on Monday</strong> and
+        <strong>May on Saturday</strong>.
+    </li>
+
+    <li>
+        Crime frequency shows noticeable variation across both months and
+        weekdays, with no single day consistently recording the highest
+        activity across all months.
+    </li>
+
+    <li>
+        Overall, the heatmap indicates that crime activity is distributed
+        unevenly across the calendar, with certain month-and-weekday
+        combinations showing distinctly higher concentrations than others.
+    </li>
+</ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     5. TOP COMMUNITY AREAS
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Top Community Areas</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='top10_community_areas.png') }}"
+            alt="Top 10 Community Areas by Crime Count"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+<ul>
+    <li>
+        <strong>Community Area 56</strong> has the highest recorded crime count
+        at <strong>76 incidents</strong>, substantially exceeding all other
+        areas in the top 10.
+    </li>
+
+    <li>
+        <strong>Community Area 31</strong> ranks second with
+        <strong>38 incidents</strong>, while <strong>Community Area 55</strong>
+        follows with <strong>35 incidents</strong>.
+    </li>
+
+    <li>
+        Community Areas <strong>70</strong> and <strong>49</strong> each record
+        <strong>33 incidents</strong>, placing them just below the leading
+        three areas.
+    </li>
+
+    <li>
+        The remaining six areas — <strong>21, 36, 44, 50, and 32</strong> —
+        are closely grouped at around <strong>32 incidents</strong>, indicating
+        relatively similar crime counts among them.
+    </li>
+
+    <li>
+        The large gap between Area 56 and the rest of the top 10 indicates that
+        crime records are <strong>strongly concentrated in a small number of
+        community areas</strong>.
+    </li>
+</ul>
+    </div>
+
+</div>
+
+<!-- =========================================================
+     USE CASE 2 — QUESTIONS & ANSWERS
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Use Case 2 — Questions & Answers</h2>
+            <p class="muted">
+                Answers are calculated from the current crimes database.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="analysis-insight">
+
+        <h3>Q.1 Which crime category is most frequent?</h3>
+
+        <p>
+            <strong>{{ most_frequent_crime }}</strong> is the most frequently
+            recorded crime category, with
+            <strong>{{ most_frequent_crime_count }}</strong>
+            recorded incidents.
+        </p>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="analysis-insight">
+
+        <h3>Q.2 Is the arrest rate consistent across different years?</h3>
+
+        <p>
+            The arrest rate varies across the observed years, ranging from
+            approximately <strong>{{ "%.2f"|format(min_arrest_rate) }}%</strong>
+            to <strong>{{ "%.2f"|format(max_arrest_rate) }}%</strong>.
+        </p>
+
+        <p>
+            This represents a range of
+            <strong>{{ "%.2f"|format(arrest_rate_range) }}</strong>
+            percentage points, with a standard deviation of
+            <strong>{{ "%.2f"|format(arrest_rate_std) }}</strong>
+            percentage points.
+        </p>
+
+        <p>
+            Therefore, the arrest rate is not completely consistent across
+            the observed years and shows noticeable year-to-year variation.
+        </p>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="analysis-insight">
+
+        <h3>Q.3 Which month has the highest crime frequency?</h3>
+
+        <p>
+            <strong>{{ highest_crime_month }}</strong> has the highest crime
+            frequency, with
+            <strong>{{ highest_crime_month_count }}</strong>
+            recorded crimes.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

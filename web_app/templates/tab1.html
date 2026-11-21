@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}Tab 1 — Crime Database CRUD{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Crime Database Management</h1>
+        <p class="muted">
+            Perform realtime <strong>CRUD</strong> operations on the
+            <strong>database</strong>.
+        </p>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     COMPLETE PIPELINE
+     ========================================================= -->
+
+<div class="panel" style="text-align: center;">
+
+    <div class="panel-header" style="justify-content: center;">
+        <div>
+            <h2>Run Complete Analytics Pipeline</h2>
+
+            <p class="muted">
+                Executes
+                <strong>Use Case 1 → Use Case 2 → Use Case 3 → Use Case 4</strong>
+                in sequence. This prepares the database, generates analytical
+                outputs, creates SQL views, and refreshes the reports.
+            </p>
+        </div>
+    </div>
+
+    <form
+        action="{{ url_for('run_pipeline') }}"
+        method="post"
+    >
+        <button
+            type="submit"
+            class="button primary"
+            onclick="return confirm('Run the complete pipeline? This will execute Use Cases 1, 2, 3 and 4 in sequence.');"
+        >
+            ▶ Run Complete Pipeline
+        </button>
+    </form>
+
+</div>
+
+
+<!-- =========================================================
+     DATABASE INITIALIZATION STATUS
+     ========================================================= -->
+
+{% if not database_ready %}
+
+<div class="panel" style="text-align: center;">
+
+    <h3>Database Not Initialized</h3>
+
+    <p class="muted">
+        The <strong>crimes</strong> table has not been created yet.
+        Click <strong>Run Complete Pipeline</strong> above to execute
+        Use Cases 1–4 and initialize the database and analytical outputs.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     DATABASE STATISTICS
+     ========================================================= -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-label">Total Records</div>
+        <div class="stat-value">{{ stats.total_records }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Total Columns</div>
+        <div class="stat-value">{{ stats.total_columns }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Database</div>
+        <div class="stat-value small">{{ stats.database }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Primary Key(Unique)</div>
+        <div class="stat-value small">{{ stats.primary_key }}</div>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     CSV UPLOAD
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <h2>Upload Crimes in CSV Format</h2>
+
+            <p class="muted">
+                The cleaned upload and replaces the current rows but keeps
+                the existing database schema.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        action="{{ url_for('upload_csv') }}"
+        method="post"
+        enctype="multipart/form-data"
+        class="upload-form"
+    >
+
+        <input
+            type="file"
+            name="file"
+            accept=".csv"
+            required
+        >
+
+
+        <label class="checkbox-row">
+
+            <input
+                type="checkbox"
+                name="confirm_upload"
+                value="yes"
+                required
+            >
+
+            I understand that the selected upload operation will modify
+            the crime records.
+
+        </label>
+
+
+        <button
+            class="button danger"
+            type="submit"
+            name="upload_mode"
+            value="replace"
+        >
+            Upload & Replace Records
+        </button>
+
+
+        <button
+            class="button primary"
+            type="submit"
+            name="upload_mode"
+            value="append"
+        >
+            Upload & Add Records
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- =========================================================
+     CRIME RECORDS
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <h2>Crime Records</h2>
+
+            <p class="muted">
+                Please scroll horizontally to access all the records
+            </p>
+        </div>
+
+
+        <div class="button-row">
+
+            <a
+                class="button primary"
+                href="{{ url_for('add_record') }}"
+            >
+                + Add Crime Record
+            </a>
+
+
+            <a
+                class="button secondary"
+                href="{{ url_for('refresh_records', q=query) }}"
+            >
+                ↻ Refresh Records
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <form
+        class="search-form"
+        method="get"
+        action="{{ url_for('tab1') }}"
+    >
+
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search ID, Case Number, Primary Type, Block, Description..."
+        >
+
+
+        <button
+            class="button secondary"
+            type="submit"
+        >
+            Search
+        </button>
+
+
+        {% if query %}
+
+            <a
+                class="button ghost"
+                href="{{ url_for('tab1') }}"
+            >
+                Clear
+            </a>
+
+        {% endif %}
+
+    </form>
+
+
+    <!-- RECORD TABLE -->
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+
+                    {% for column in columns %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+
+                    <th class="sticky-action">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for record in records %}
+
+                    <tr>
+
+                        {% for column in columns %}
+
+                            <td>
+                                {{ record[column] if record[column] is not none else '' }}
+                            </td>
+
+                        {% endfor %}
+
+
+                        <td class="actions sticky-action">
+
+
+                            <a
+                                class="button small"
+                                href="{{ url_for('view_record', record_id=record['id']) }}"
+                            >
+                                View
+                            </a>
+
+
+                            <a
+                                class="button small primary"
+                                href="{{ url_for('edit_record', record_id=record['id']) }}"
+                            >
+                                Edit
+                            </a>
+
+
+                            <form
+                                action="{{ url_for('delete_record', record_id=record['id']) }}"
+                                method="post"
+                                onsubmit="return confirm('Delete record {{ record['id'] }}?');"
+                            >
+
+                                <button
+                                    class="button small danger"
+                                    type="submit"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+
+                        </td>
+
+                    </tr>
+
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="{{ columns|length + 1 }}"
+                            class="empty-state"
+                        >
+                            No records found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- PAGINATION -->
+
+    <div class="pagination">
+
+        {% if page > 1 %}
+
+            <a
+                class="button secondary"
+                href="{{ url_for('tab1', page=page-1, q=query) }}"
+            >
+                ← Previous
+            </a>
+
+        {% endif %}
+
+
+        <span>
+            Page {{ page }} of {{ total_pages }}
+        </span>
+
+
+        {% if page < total_pages %}
+
+            <a
+                class="button secondary"
+                href="{{ url_for('tab1', page=page+1, q=query) }}"
+            >
+                Next →
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% endblock %}

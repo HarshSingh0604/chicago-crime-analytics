@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if mode == 'add' %}
+        Add Crime Record
+    {% else %}
+        Edit Crime Record
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>
+            {% if mode == 'add' %}
+                Add Crime Record
+            {% else %}
+                Edit Crime Record
+            {% endif %}
+        </h1>
+
+        <p class="muted">
+            Only the meaningful CRUD fields are editable.
+            Derived date fields are calculated automatically.
+        </p>
+    </div>
+
+    <a class="button secondary" href="{{ url_for('tab1') }}">
+        ← Back to Records
+    </a>
+</div>
+
+
+<div class="panel">
+
+    <form method="post" class="crime-form">
+
+        <div class="form-grid">
+
+            <!-- Record ID - visible but not editable -->
+            <div class="form-group">
+                <label for="record_id">Record ID</label>
+
+                <input
+                    id="record_id"
+                    type="text"
+                    value="{{ display_id }}"
+                    readonly
+                >
+
+                <small class="muted">
+                    Automatically assigned by the database.
+                </small>
+            </div>
+
+
+            <!-- Case Number -->
+            <div class="form-group">
+                <label for="case_number">Case Number *</label>
+
+                <input
+                    id="case_number"
+                    name="case_number"
+                    type="text"
+                    required
+                    value="{{ record.get('case_number','') }}"
+                >
+            </div>
+
+
+            <!-- Date -->
+            <div class="form-group">
+                <label for="date">Date and Time*</label>
+
+                <input
+                    id="date"
+                    name="date"
+                    type="datetime-local"
+                    required
+                    value="{{ record.get('date_form', record.get('date','')) }}"
+                >
+            </div>
+
+
+            <!-- Block -->
+            <div class="form-group wide">
+                <label for="block">Block</label>
+
+                <input
+                    id="block"
+                    name="block"
+                    type="text"
+                    value="{{ record.get('block','') }}"
+                >
+            </div>
+
+
+            <!-- Primary Type -->
+            <div class="form-group">
+                <label for="primary_type">Primary Type *</label>
+
+                <input
+                    id="primary_type"
+                    name="primary_type"
+                    type="text"
+                    required
+                    value="{{ record.get('primary_type','') }}"
+                >
+            </div>
+
+
+            <!-- Description -->
+            <div class="form-group wide">
+                <label for="description">Description</label>
+
+                <input
+                    id="description"
+                    name="description"
+                    type="text"
+                    value="{{ record.get('description','') }}"
+                >
+            </div>
+
+
+            <!-- Location Description -->
+            <div class="form-group wide">
+                <label for="location_desc">Location Description</label>
+
+                <input
+                    id="location_desc"
+                    name="location_desc"
+                    type="text"
+                    value="{{ record.get('location_desc','') }}"
+                >
+            </div>
+
+
+            <!-- Arrest -->
+            <div class="form-group">
+                <label for="arrest">Arrest Happened</label>
+
+                <select id="arrest" name="arrest">
+
+                    <option
+                        value="0"
+                        {% if not record.get('arrest', False) %}
+                            selected
+                        {% endif %}
+                    >
+                        No
+                    </option>
+
+                    <option
+                        value="1"
+                        {% if record.get('arrest', False) %}
+                            selected
+                        {% endif %}
+                    >
+                        Yes
+                    </option>
+
+                </select>
+            </div>
+
+
+            <!-- Domestic -->
+            <div class="form-group">
+                <label for="domestic">Domestic</label>
+
+                <select id="domestic" name="domestic">
+
+                    <option
+                        value="0"
+                        {% if not record.get('domestic', False) %}
+                            selected
+                        {% endif %}
+                    >
+                        No
+                    </option>
+
+                    <option
+                        value="1"
+                        {% if record.get('domestic', False) %}
+                            selected
+                        {% endif %}
+                    >
+                        Yes
+                    </option>
+
+                </select>
+            </div>
+
+
+            <!-- Beat Number -->
+            <div class="form-group">
+                <label for="beat_num">Beat Number</label>
+
+                <input
+                    id="beat_num"
+                    name="beat_num"
+                    type="number"
+                    value="{{ record.get('beat_num','') }}"
+                >
+            </div>
+
+
+            <!-- District Code -->
+            <div class="form-group">
+                <label for="district_code">District Code</label>
+
+                <input
+                    id="district_code"
+                    name="district_code"
+                    type="number"
+                    value="{{ record.get('district_code','') }}"
+                >
+            </div>
+
+
+            <!-- Ward Number -->
+            <div class="form-group">
+                <label for="ward_no">Ward Number</label>
+
+                <input
+                    id="ward_no"
+                    name="ward_no"
+                    type="number"
+                    value="{{ record.get('ward_no','') }}"
+                >
+            </div>
+
+
+            <!-- Community Code -->
+            <div class="form-group">
+                <label for="community_code">Community Code</label>
+
+                <input
+                    id="community_code"
+                    name="community_code"
+                    type="number"
+                    value="{{ record.get('community_code','') }}"
+                >
+            </div>
+
+        </div>
+
+
+        <!-- Automatically managed fields -->
+        <div class="derived-box">
+
+            <strong>Automatically managed fields:</strong>
+
+            <span>
+                id, year, Month, DayOfWeek, Hour, date_of_update
+            </span>
+
+        </div>
+
+
+        <!-- Form actions -->
+        <div class="form-actions">
+
+            <a
+                class="button secondary"
+                href="{{ url_for('tab1') }}"
+            >
+                Cancel
+            </a>
+
+            <button
+                class="button primary"
+                type="submit"
+            >
+                {% if mode == 'add' %}
+                    Create Record
+                {% else %}
+                    Update Record
+                {% endif %}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

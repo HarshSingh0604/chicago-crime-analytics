@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Tab 5 — Use Case 4{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Use Case 4 — SQL Reporting & Integration</h1>
+        <p class="muted">
+            SQL-based reporting, database views, Pandas integration,
+            and analytical outputs generated from the crimes database.
+        </p>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     TASK 1 & 2 — SUMMARY TABLES & SQL QUERIES
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 1 & 2 — Summary Tables &amp; SQL Queries</h2>
+            <p class="muted">
+                SQL-based summary tables and analytical queries were created
+                from the central <strong>crimes</strong> table.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Created the summary table
+            <strong>crime_summary_yearly</strong> for yearly crime and
+            arrest totals.
+        </li>
+
+        <li>
+            Created the summary table
+            <strong>crime_summary_by_category</strong> for crime-category
+            counts and percentage contribution.
+        </li>
+
+        <li>
+            SQL queries were used to calculate
+            <strong>crime count per year</strong>.
+        </li>
+
+        <li>
+            SQL queries were used to calculate
+            <strong>top crime types and their percentage contribution</strong>.
+        </li>
+
+        <li>
+            SQL queries were used to calculate
+            <strong>arrest count per year</strong>.
+        </li>
+
+        <li>
+            The summary tables are generated from the central
+            <strong>crimes</strong> table and provide the foundation for
+            the database views, visualizations, and reports presented below.
+        </li>
+    </ul>
+
+
+    <!-- =========================================================
+         SQL QUERIES EXECUTED
+         ========================================================= -->
+
+    <div style="margin-top: 30px;">
+
+        <h3>SQL Queries Executed</h3>
+
+        <p class="muted">
+            The following SQL queries were used to generate the required
+            Use Case 4 summaries and analytical results.
+        </p>
+
+
+        <h4>1. Crime Count per Year</h4>
+
+        <pre><code>SELECT
+    year,
+    COUNT(*) AS crime_count
+FROM crimes
+GROUP BY year
+ORDER BY year;</code></pre>
+
+
+        <h4>2. Top 5 Crime Types and Their Percentages</h4>
+
+        <pre><code>SELECT
+    primary_type,
+    COUNT(*) AS crime_count,
+    ROUND(
+        COUNT(*) * 100.0 /
+        (SELECT COUNT(*) FROM crimes),
+        2
+    ) AS percentage
+FROM crimes
+GROUP BY primary_type
+ORDER BY crime_count DESC
+LIMIT 5;</code></pre>
+
+
+        <h4>3. Arrest Count per Year</h4>
+
+        <pre><code>SELECT
+    year,
+    SUM(
+        CASE
+            WHEN arrest = 1 THEN 1
+            ELSE 0
+        END
+    ) AS arrest_count
+FROM crimes
+GROUP BY year
+ORDER BY year;</code></pre>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 3 & 4 — DATABASE VIEWS & PANDAS INTEGRATION
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 3 & 4 — Database Views &amp; Pandas Integration</h2>
+            <p class="muted">
+                SQL views were created from the central crime table and
+                integrated with Pandas for further analysis.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Created the SQL view
+            <strong>vw_crime_yearly</strong> for yearly crime and
+            arrest summaries.
+        </li>
+
+        <li>
+            Created the SQL view
+            <strong>vw_crime_by_category</strong> for crime-category
+            counts and percentages.
+        </li>
+
+        <li>
+            Both views were read into Pandas DataFrames using
+            <strong>pd.read_sql()</strong>.
+        </li>
+
+        <li>
+            The resulting Pandas DataFrames were used as the source for
+            the visualizations and analytical reporting shown below.
+        </li>
+    </ul>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 5 — VISUALIZATION
+     1. YEARLY CRIMES VS ARRESTS
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Yearly Crimes vs Arrests</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='vw_crime_yearly.png') }}"
+            alt="Yearly Crimes vs Arrests"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                Total recorded crimes fluctuate across the observed years,
+                with the <strong>highest crime count in 2016</strong> at
+                approximately <strong>242 incidents</strong> and the
+                <strong>lowest in 2017</strong> at approximately
+                <strong>191 incidents</strong>.
+            </li>
+
+            <li>
+                Total arrests remain substantially lower than total crimes
+                throughout the period, ranging from approximately
+                <strong>56 to 75 arrests</strong> per year.
+            </li>
+
+            <li>
+                The highest number of arrests occurs in
+                <strong>2019</strong>, with approximately
+                <strong>75 arrests</strong>, while the lowest occurs in
+                <strong>2017</strong>, with approximately
+                <strong>56 arrests</strong>.
+            </li>
+
+            <li>
+                Crime counts and arrests show similar movement in several
+                years. Both reach their lowest observed levels in
+                <strong>2017</strong>, followed by increases through
+                <strong>2018</strong> and <strong>2019</strong>.
+            </li>
+
+            <li>
+                Despite fluctuations in crime volume, arrests remain
+                considerably lower than total recorded crimes in every year,
+                highlighting the difference between reported incidents and
+                incidents resulting in an arrest.
+            </li>
+
+            <li>
+                The visualization is based on the
+                <strong>vw_crime_yearly</strong> database view, which was
+                read into Pandas using <strong>pd.read_sql()</strong>
+                before generating the chart.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 5 — VISUALIZATION
+     2. CRIME CATEGORIES BY PERCENTAGE
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Crime Categories by Percentage</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='vw_crime_by_category.png') }}"
+            alt="Crime Categories by Percentage"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                <strong>THEFT</strong> represents the largest share of
+                recorded crimes, accounting for approximately
+                <strong>21%</strong> of the total.
+            </li>
+
+            <li>
+                <strong>BATTERY</strong> is the second-largest category at
+                approximately <strong>16.5%</strong>, followed by
+                <strong>ASSAULT</strong> at around <strong>9.8%</strong>.
+            </li>
+
+            <li>
+                <strong>NARCOTICS</strong> and <strong>BURGLARY</strong>
+                contribute similar shares of approximately
+                <strong>9%</strong> each, while <strong>ROBBERY</strong>
+                accounts for slightly more than <strong>8%</strong>.
+            </li>
+
+            <li>
+                <strong>MOTOR VEHICLE THEFT</strong> and
+                <strong>VANDALISM</strong> each account for roughly
+                <strong>6%</strong> of recorded crimes, considerably less
+                than the leading categories.
+            </li>
+
+            <li>
+                <strong>PUBLIC PEACE VIOLATION</strong> and
+                <strong>DECEPTIVE PRACTICE</strong> have the smallest shares
+                among the ten categories shown, at approximately
+                <strong>4%</strong> and <strong>3.5%</strong>, respectively.
+            </li>
+
+            <li>
+                Overall, the distribution is concentrated in a small number
+                of leading categories, with <strong>THEFT</strong> having
+                the largest individual share.
+            </li>
+
+            <li>
+                The visualization is based on the
+                <strong>vw_crime_by_category</strong> database view, which
+                was read into Pandas using <strong>pd.read_sql()</strong>
+                before generating the chart.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     GENERATED REPORTS
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Generated Reports</h2>
+            <p class="muted">
+                Download the CSV reports generated from the SQL-based
+                Use Case 4 analysis.
+            </p>
+        </div>
+    </div>
+
+    <div class="button-row">
+
+        <a
+            class="button secondary"
+            href="{{ url_for('report_file', filename='crime_yearly_report.csv') }}"
+        >
+            Download Yearly Report
+        </a>
+
+        <a
+            class="button secondary"
+            href="{{ url_for('report_file', filename='crime_by_category_report.csv') }}"
+        >
+            Download Category Report
+        </a>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

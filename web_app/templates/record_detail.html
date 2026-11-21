@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Crime Record {{ record['id'] }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Crime Record #{{ record['id'] }}</h1>
+        <p class="muted">Full record view across all 25 database columns.</p>
+    </div>
+    <div class="page-actions">
+        <a class="button secondary" href="{{ url_for('edit_record', record_id=record['id']) }}">Edit</a>
+        <a class="button ghost" href="{{ url_for('tab1') }}">← Back</a>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="detail-grid">
+        {% for key, value in record.items() %}
+            <div class="detail-item">
+                <div class="detail-key">{{ key }}</div>
+                <div class="detail-value">{{ value if value is not none else '' }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

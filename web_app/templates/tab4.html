@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Tab 4 — Use Case 3{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Use Case 3 — Statistical Insights & Pattern Detection</h1>
+        <p class="muted">
+            Static showcase of the Use Case 3 outputs.
+        </p>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     1. CRIME INTENSITY BY HOUR
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Crime Intensity by Hour</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='crimes_by_hour.png') }}"
+            alt="Crime Intensity by Hour"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+            <li>
+                Crime activity remains relatively low during the early
+                morning hours, with the lowest observed frequency occurring
+                around <strong>05:00</strong>.
+            </li>
+
+            <li>
+                Recorded crime frequency begins to increase substantially
+                from the morning onward, with a clear rise through the
+                afternoon hours.
+            </li>
+
+            <li>
+                The highest observed crime activity occurs around
+                <strong>18:00</strong>, followed by similarly high levels
+                at <strong>19:00</strong> and <strong>20:00</strong>.
+            </li>
+
+            <li>
+                After the evening peak, crime frequency declines steadily,
+                with a particularly noticeable reduction from
+                <strong>21:00</strong> through <strong>23:00</strong>.
+            </li>
+
+            <li>
+                Overall, the distribution shows a clear concentration of
+                recorded crime activity during the <strong>afternoon and
+                evening hours</strong> compared with the early morning.
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     2. COMMUNITY AREA CRIME DISTRIBUTION
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Community Area Crime Distribution</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='community_area_boxplot.png') }}"
+            alt="Community Area Crime Distribution"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+       <ul>
+    <li>
+        The distribution has a <strong>mean crime count of 25.97</strong>
+        per community area, with the middle 50% of areas ranging from
+        <strong>22 to 29 incidents</strong>.
+    </li>
+
+    <li>
+        The <strong>interquartile range (IQR) is 7</strong>, giving an
+        IQR-based lower bound of <strong>11.5</strong> and an upper bound
+        of <strong>39.5 incidents</strong>.
+    </li>
+
+    <li>
+        <strong>Community Area 56</strong> is the only community area
+        identified as an extreme outlier, with
+        <strong>76 recorded crimes</strong> — substantially above the
+        upper IQR bound of <strong>39.5</strong>.
+    </li>
+
+    <li>
+        This means that only <strong>1 community area</strong> falls outside
+        the expected IQR range, while the remaining areas lie within the
+        typical distribution.
+    </li>
+
+    <li>
+        Overall, the box plot and IQR analysis indicate a
+        <strong>right-skewed distribution</strong>, driven primarily by the
+        unusually high crime count in Community Area 56.
+    </li>
+</ul>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     3. CORRELATION MATRIX
+     ========================================================= -->
+
+<div class="analysis-section">
+
+    <div class="analysis-chart">
+        <h2>Correlation Matrix</h2>
+
+        <img
+            class="chart-image"
+            src="{{ url_for('chart_file', filename='correlation_matrix.png') }}"
+            alt="Correlation Matrix"
+        >
+    </div>
+
+    <div class="analysis-insight">
+        <h3>Key Insights</h3>
+
+        <ul>
+    <li>
+        The correlation matrix shows that <strong>most selected variables have
+        very weak relationships</strong>, with correlation values generally
+        close to zero.
+    </li>
+
+    <li>
+        The strongest observed relationship with <strong>arrest</strong> is
+        with <strong>domestic</strong>, with a correlation of
+        <strong>0.07</strong>. This indicates only a very weak positive
+        association.
+    </li>
+
+    <li>
+        The strongest negative relationship shown is between
+        <strong>domestic</strong> and <strong>community_code</strong>, at
+        approximately <strong>-0.07</strong>, which is also very weak.
+    </li>
+
+    <li>
+        Variables such as <strong>year, month, hour, ward_no, beat_num</strong>,
+        and <strong>district_code</strong> show correlations close to zero
+        with arrest, suggesting little linear association in this dataset.
+    </li>
+
+    <li>
+        Overall, the matrix indicates <strong>no strong linear relationships</strong>
+        among the selected crime-related features. These correlations describe
+        association only and should not be interpreted as evidence of causation.
+    </li>
+</ul>
+    </div>
+
+</div>
+
+
+{% endblock %}

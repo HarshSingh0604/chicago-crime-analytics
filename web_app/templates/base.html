@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chicago Crime Analytics{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">Chicago Crime Analytics</div>
+        <div class="nav-links">
+            <a href="{{ url_for('tab1') }}">CRUD Operations</a>
+            <a href="{{ url_for('tab2') }}">Use Case 1 </a>
+            <a href="{{ url_for('tab3') }}">Use Case 2</a>
+            <a href="{{ url_for('tab4') }}">Use Case 3</a>
+            <a href="{{ url_for('tab5') }}">Use Case4</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-area">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

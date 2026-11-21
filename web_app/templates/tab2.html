@@ -1,0 +1,679 @@
+{% extends "base.html" %}
+
+{% block title %}Use Case 1 — Load & Clean Crime Data{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Use Case 1 — Load & Clean Chicago Crime Data</h1>
+
+        <p class="muted">
+            <strong>Objective:</strong>
+            Build a data ingestion pipeline to read, clean, and insert crime data into the database.
+        </p>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     DATASET OVERVIEW
+     ========================================================= -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-label">Source Dataset</div>
+        <div class="stat-value small">chicago_crime_dataset.csv</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Rows in Database</div>
+        <div class="stat-value">{{ total_records }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Final Columns</div>
+        <div class="stat-value">{{ total_columns }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Primary Key</div>
+        <div class="stat-value small">id</div>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 1 — LOAD DATASET
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 1 — Load the Dataset</h2>
+
+            <p class="muted">
+                The CSV dataset was loaded into a Pandas DataFrame and inspected
+                before cleaning and database insertion.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Loaded <strong>chicago_crime_dataset.csv</strong> into a Pandas DataFrame.
+        </li>
+
+        <li>
+            Inspected the first 10 rows.
+        </li>
+
+        <li>
+            Inspected column names and data types.
+        </li>
+
+        <li>
+            The current database contains
+            <strong>{{ total_records }}</strong> records.
+        </li>
+
+        <li>
+            The final database table contains
+            <strong>{{ total_columns }}</strong> columns.
+        </li>
+    </ul>
+
+</div>
+<!-- =========================================================
+     FIRST 10 ROWS
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>First 10 Rows</h2>
+            <p class="muted">
+                First 10 records from the current <strong>crimes</strong> table.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    {% if first_rows %}
+                        {% for column in first_rows[0].keys() %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in first_rows %}
+                    <tr>
+                        {% for column in row.keys() %}
+                            <td>
+                                {{ row[column] if row[column] is not none else '' }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SCHEMA & DATA TYPES
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Schema & Data Types</h2>
+            <p class="muted">
+                Column names and database types of the <strong>crimes</strong> table.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>Primary Key</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for column in schema_rows %}
+                    <tr>
+                        <td>{{ column.name }}</td>
+                        <td>{{ column.type }}</td>
+                        <td>
+                            {% if column.pk %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<!-- =========================================================
+     TASK 2 — CLEAN DATASET
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 2 — Clean the Dataset</h2>
+
+            <p class="muted">
+                Data quality and consistency checks were performed before
+                inserting the cleaned data into the database.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Converted the <strong>date</strong> field into datetime format.
+        </li>
+
+        <li>
+            Identified and handled missing values in selected key fields.
+        </li>
+
+        <li>
+            Filled missing <strong>location_desc</strong> values with
+            <strong>UNKNOWN</strong>.
+        </li>
+
+        <li>
+            Removed duplicate records.
+        </li>
+
+        <li>
+            Standardized categorical/string fields by stripping whitespace
+            and unifying case.
+        </li>
+    </ul>
+
+<h3>Columns with Missing Values</h3>
+
+<div class="table-wrapper">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Missing Values</th>
+                <th>How It Was Handled</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in missing_summary %}
+                <tr>
+                    <td>{{ row.column }}</td>
+                    <td>{{ row.missing_count }}</td>
+                    <td>{{ row.handling }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3" class="empty-state">
+                        No columns contain missing values.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TASK 3 — GENERATE NEW FEATURES
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 3 — Generate New Features</h2>
+
+            <p class="muted">
+                Date-derived fields were generated from the cleaned date column.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Generated <strong>Year</strong> for comparison with the original
+            <strong>year</strong> field.
+        </li>
+
+        <li>
+            Extracted <strong>Month</strong> from the date.
+        </li>
+
+        <li>
+            Extracted <strong>DayOfWeek</strong> from the date.
+        </li>
+
+        <li>
+            Extracted <strong>Hour</strong> for later time-based analysis.
+        </li>
+
+        <li>
+            Verified that the generated <strong>Year</strong> values matched
+            the original <strong>year</strong> values, then retained the original
+            lowercase <strong>year</strong> column.
+        </li>
+    </ul>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 4 — NUMPY / MISSING VALUES
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 4 — NumPy & Missing-Value Analysis</h2>
+
+            <p class="muted">
+                NumPy was used to calculate missing-value percentages for
+                every column.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Calculated the percentage of missing values for every column
+            using NumPy.
+        </li>
+
+        <li>
+            Checked for columns with more than 50% missing values.
+        </li>
+
+        <li>
+            No columns in the current dataset exceeded the 50% missing-value
+            threshold, so no columns were dropped.
+        </li>
+    </ul>
+
+</div>
+
+
+<!-- =========================================================
+     TASK 5 — DATABASE INSERTION
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Task 5 — Database Insertion</h2>
+
+            <p class="muted">
+                The cleaned data was inserted into the project's SQLite database,
+                which is the selected implementation for the database layer.
+            </p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            Created the <strong>crimes</strong> table using SQLAlchemy.
+        </li>
+
+        <li>
+            Defined <strong>id</strong> as the primary key.
+        </li>
+
+        <li>
+            Inserted the cleaned data into <strong>chicago_crime.db</strong>.
+        </li>
+
+        <li>
+            Existing database records are preserved during normal
+            Use Case 1 reruns.
+        </li>
+
+        <li>
+            Verified the database contents after insertion.
+        </li>
+    </ul>
+
+</div>
+<!-- =========================================================
+     TASK 5 — DATABASE SCHEMA
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Crime Table Schema</h2>
+
+            <p class="muted">
+                Schema designed for the <strong>crimes</strong> table.
+                The <strong>id</strong> field is the primary key and is
+                automatically managed by the database.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Data Type</th>
+                    <th>Key / Role</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td><strong>id</strong></td>
+                    <td>INTEGER</td>
+                    <td>PRIMARY KEY</td>
+                    <td>Unique identifier for each crime record.</td>
+                </tr>
+
+                <tr>
+                    <td>case_number</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Unique police case/reference number.</td>
+                </tr>
+
+                <tr>
+                    <td>date</td>
+                    <td>DATETIME</td>
+                    <td>—</td>
+                    <td>Date and time when the crime was reported.</td>
+                </tr>
+
+                <tr>
+                    <td>block</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Block/location reference associated with the incident.</td>
+                </tr>
+
+                <tr>
+                    <td>iucr_code</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Illinois Uniform Crime Reporting code.</td>
+                </tr>
+
+                <tr>
+                    <td>primary_type</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Primary crime category.</td>
+                </tr>
+
+                <tr>
+                    <td>description</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Detailed description of the crime.</td>
+                </tr>
+
+                <tr>
+                    <td>location_desc</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Description of the location where the incident occurred.</td>
+                </tr>
+
+                <tr>
+                    <td>arrest</td>
+                    <td>BOOLEAN</td>
+                    <td>—</td>
+                    <td>Indicates whether an arrest was made.</td>
+                </tr>
+
+                <tr>
+                    <td>domestic</td>
+                    <td>BOOLEAN</td>
+                    <td>—</td>
+                    <td>Indicates whether the incident was domestic-related.</td>
+                </tr>
+
+                <tr>
+                    <td>beat_num</td>
+                    <td>INTEGER</td>
+                    <td>—</td>
+                    <td>Police beat number.</td>
+                </tr>
+
+                <tr>
+                    <td>district_code</td>
+                    <td>INTEGER</td>
+                    <td>—</td>
+                    <td>Police district code.</td>
+                </tr>
+
+                <tr>
+                    <td>ward_no</td>
+                    <td>INTEGER</td>
+                    <td>—</td>
+                    <td>Chicago ward number.</td>
+                </tr>
+
+                <tr>
+                    <td>community_code</td>
+                    <td>INTEGER</td>
+                    <td>—</td>
+                    <td>Chicago community area code.</td>
+                </tr>
+
+                <tr>
+                    <td>fbi_code</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>FBI crime classification code.</td>
+                </tr>
+
+                <tr>
+                    <td>x_coordinate</td>
+                    <td>REAL</td>
+                    <td>—</td>
+                    <td>X coordinate associated with the location.</td>
+                </tr>
+
+                <tr>
+                    <td>y_coordinate</td>
+                    <td>REAL</td>
+                    <td>—</td>
+                    <td>Y coordinate associated with the location.</td>
+                </tr>
+
+                <tr>
+                    <td>year</td>
+                    <td>INTEGER</td>
+                    <td>Derived</td>
+                    <td>Year derived from the crime date.</td>
+                </tr>
+
+                <tr>
+                    <td>date_of_update</td>
+                    <td>DATETIME</td>
+                    <td>Derived</td>
+                    <td>Timestamp of the most recent database update.</td>
+                </tr>
+
+                <tr>
+                    <td>latitude</td>
+                    <td>REAL</td>
+                    <td>—</td>
+                    <td>Latitude coordinate of the incident.</td>
+                </tr>
+
+                <tr>
+                    <td>longitude</td>
+                    <td>REAL</td>
+                    <td>—</td>
+                    <td>Longitude coordinate of the incident.</td>
+                </tr>
+
+                <tr>
+                    <td>location</td>
+                    <td>TEXT</td>
+                    <td>—</td>
+                    <td>Geographic location representation.</td>
+                </tr>
+
+                <tr>
+                    <td>Month</td>
+                    <td>INTEGER</td>
+                    <td>Derived</td>
+                    <td>Month extracted from the crime date.</td>
+                </tr>
+
+                <tr>
+                    <td>DayOfWeek</td>
+                    <td>TEXT</td>
+                    <td>Derived</td>
+                    <td>Day of the week extracted from the crime date.</td>
+                </tr>
+
+                <tr>
+                    <td>Hour</td>
+                    <td>INTEGER</td>
+                    <td>Derived</td>
+                    <td>Hour extracted from the crime date.(Needed for tasks in use case 3)</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     QUESTIONS & ANSWERS
+     ========================================================= -->
+
+<div class="panel">
+
+    <div class="panel-header">
+        <div>
+            <h2>Use Case 1 — Questions & Answers</h2>
+
+            <p class="muted">
+                Answers are populated from the current crime database.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Question 1 -->
+
+    <div class="analysis-insight">
+
+        <h3>
+            Q.1 How many unique crime types exist in the dataset?
+        </h3>
+
+        <p>
+            There are
+            <strong>{{ unique_crime_types }}</strong>
+            unique crime types in the dataset, based on the
+            <strong>primary_type</strong> field.
+        </p>
+        <p 
+            class="muted">The current value is based on the original dataset and updates automatically to reflect any changes made to the crime database.
+ 
+        </p>
+
+    </div>
+
+
+    <br>
+
+
+    <!-- Question 2 -->
+
+<div class="analysis-insight">
+
+    <h3>
+        Q.2 Are there anomalies in date formats or obvious outliers?
+    </h3>
+
+    <p>
+    <strong>No date-format anomalies were found.</strong>
+    All date values were successfully converted to datetime format, with
+    <strong>0 missing dates</strong>.
+</p>
+
+<p>
+    However, a dataset-level anomaly was identified when compared with the
+    project's stated scope of <strong>2012–2016</strong>. The actual date range
+    in the dataset extends from <strong>{{ earliest_date }}</strong> to
+    <strong>{{ latest_date }}</strong>.
+</p>
+
+<p>
+    When the stated 2012–2016 period is used as the expected scope,
+    <strong style="font-size: 18px;">
+        1,533 records
+    </strong>
+    fall outside that period. These records are therefore treated as
+    <strong>out-of-scope records</strong> relative to the project's stated
+    date range.
+</p>
+
+<p class="muted">
+    This discrepancy is documented as a data anomaly relative to the project's
+    stated scope.
+</p>
+</div>
+</div>
+
+{% endblock %}
