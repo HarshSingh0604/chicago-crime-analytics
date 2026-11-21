@@ -1,22 +1,22 @@
-Flask web application starter for the Chicago Crime project.
+Flask web application for the Chicago Crime Analytics project.
 
-Folder placement:
-Move the `web_app` folder into your existing project root, alongside:
-- chicago_crime.db
-- data/
-- output/
-- use_case1.py ... use_case4.py
+It reads the project-level chicago_crime.db and the charts in output/charts,
+both created by running the pipeline first (from the project root):
 
-IMPORTANT:
-1. The folder should be named `web_app`, not `web app`.
-2. The app uses the existing project-level `chicago_crime.db`.
-3. Tab 1 is live CRUD + CSV replace-upload.
-4. The Add/Edit form intentionally exposes only 12 meaningful fields.
-5. The records table/detail view still exposes all 25 database columns.
-6. Tabs 2-5 are static showcases using charts already generated in output/charts.
+    python pipeline.py
 
-Run from inside web_app:
+Then start the app from inside web_app:
+
     python app.py
 
-Then open:
-    http://127.0.0.1:5000
+and open http://127.0.0.1:5000
+
+Tabs:
+1. Crime database management: browse, filter, add, edit and delete records,
+   replace the data with a CSV upload, and rerun the full pipeline.
+   The Add/Edit form exposes the 12 most meaningful fields; the table and
+   detail view show all 25 database columns.
+2-5. Results of Use Cases 1-4 (cleaning, exploratory analysis, statistical
+   insights, SQL reporting).
+
+See ../README.md for the full project overview.
